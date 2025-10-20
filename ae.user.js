@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         海外旅行A
+// @name         海外旅行B
 // @namespace    http://your-domain.com/
 // @version      0.1
 // @description  実験用（サイト内遷移対応版）
@@ -39,7 +39,7 @@
 
         // 画像要素を作成
         const img = document.createElement('img');
-        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_access/4ec96d4d5ac6dc134fa8ffaf4ecea177888e4d4c/abroadaccess.png';
+        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_experience/d56f5df4876a617bd3c43892dc323666c61c339c/abroadex.png';
         img.alt = '広告バナー';
         img.style.cssText = `
             max-width: 700px;
