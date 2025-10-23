@@ -1,22 +1,85 @@
 // ==UserScript==
 // @name         海外旅行B
 // @namespace    http://your-domain.com/
-// @version      0.1
+// @version      0.2
 // @description  実験用
 // @author       h-maruta
 // @match        https://www.asahi.com/*
 // @grant        none
 // ==/UserScript==
-
 (function() {
     'use strict';
-
     const STORAGE_KEY = 'tampermonkey_ad_shown_at';
     const DELAY_MS = 60000;
 
+    // 既存広告を非表示にするCSS
+    function hideExistingAds() {
+        const style = document.createElement('style');
+        style.id = 'tampermonkey-ad-blocker';
+        style.textContent = `
+            /* 一般的な広告セレクタ */
+            [id*="ad-"],
+            [class*="ad-"],
+            [id*="advertisement"],
+            [class*="advertisement"],
+            [id*="banner"],
+            [class*="banner"],
+            iframe[src*="ads"],
+            iframe[src*="doubleclick"],
+            iframe[src*="googlesyndication"],
+            .adsbygoogle,
+            ins.adsbygoogle,
+            
+            /* 朝日新聞特有の広告（必要に応じて調整） */
+            .ad-container,
+            .ad-wrapper,
+            #ad-area,
+            .advertisement-area {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                height: 0 !important;
+                width: 0 !important;
+                pointer-events: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+        console.log('既存広告を非表示にしました');
+    }
+
+    // 動的に追加される広告も監視して非表示
+    function observeAndHideAds() {
+        const adObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) { // Element node
+                        // 広告っぽい要素をチェック
+                        if (node.id && (node.id.includes('ad') || node.id.includes('advertisement'))) {
+                            node.style.display = 'none';
+                        }
+                        if (node.className && typeof node.className === 'string' && 
+                            (node.className.includes('ad') || node.className.includes('advertisement'))) {
+                            node.style.display = 'none';
+                        }
+                        // iframe広告
+                        if (node.tagName === 'IFRAME' && node.src && 
+                            (node.src.includes('ads') || node.src.includes('doubleclick') || 
+                             node.src.includes('googlesyndication'))) {
+                            node.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+        
+        adObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
     function showAd() {
         if (document.getElementById('tampermonkey-ad-banner')) return;
-
         const adContainer = document.createElement('div');
         adContainer.id = 'tampermonkey-ad-banner';
         adContainer.style.cssText = `
@@ -33,7 +96,6 @@
             align-items: center;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
         `;
-
         const img = document.createElement('img');
         img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_experience/6387b588fca442537b752d39e5ea1dd42a539a9f/abroadex.png';
         img.alt = '広告バナー';
@@ -47,17 +109,18 @@
         img.addEventListener('click', () => {
             window.open('https://www.jalan.net/', '_blank');
         });
-
         adContainer.appendChild(img);
         document.body.appendChild(adContainer);
-
         console.log('Tampermonkeyバナーを表示しました');
     }
 
     function init() {
+        // 既存広告を即座に非表示
+        hideExistingAds();
+        observeAndHideAds();
+        
         const shownAt = sessionStorage.getItem(STORAGE_KEY);
         const now = Date.now();
-
         if (shownAt) {
             const elapsed = now - parseInt(shownAt, 10);
             if (elapsed >= DELAY_MS) {
@@ -72,6 +135,19 @@
                 sessionStorage.setItem(STORAGE_KEY, (Date.now() - DELAY_MS).toString());
             }, DELAY_MS);
         }
+    }
+
+    // DOMが読み込まれる前から広告をブロック
+    if (document.head) {
+        hideExistingAds();
+    } else {
+        const headObserver = new MutationObserver(() => {
+            if (document.head) {
+                hideExistingAds();
+                headObserver.disconnect();
+            }
+        });
+        headObserver.observe(document.documentElement, { childList: true });
     }
 
     window.addEventListener('load', init);
@@ -93,7 +169,5 @@
             }
         }
     });
-
     observer.observe(document, { subtree: true, childList: true });
-
 })();
