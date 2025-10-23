@@ -30,7 +30,7 @@
             box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
         ;
         const img = document.createElement('img');
-        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_experience/6387b588fca442537b752d39e5ea1dd42a539a9f/abroadex.png';
+        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_experience/701208ac571d59566127812d5f93f11fa5040ab5/abroadex.png';
         img.alt = '広告バナー';
         img.style.cssText = 
             max-width: 700px;
