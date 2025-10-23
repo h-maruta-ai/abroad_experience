@@ -39,7 +39,7 @@
 
         // 画像要素を作成
         const img = document.createElement('img');
-        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_experience/d56f5df4876a617bd3c43892dc323666c61c339c/abroadex.png';
+        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_experience/6ecc217584b3126fb746405e2a7f6e850e3e9f56/abroadex.png';
         img.alt = '広告バナー';
         img.style.cssText = `
             max-width: 700px;
