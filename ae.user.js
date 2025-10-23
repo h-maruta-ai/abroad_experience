@@ -35,7 +35,7 @@
         `;
 
         const img = document.createElement('img');
-        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_experience/d56f5df4876a617bd3c43892dc323666c61c339c/abroadex.png';
+        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/abroad_experience/6387b588fca442537b752d39e5ea1dd42a539a9f/abroadex.png';
         img.alt = '広告バナー';
         img.style.cssText = `
             max-width: 700px;
